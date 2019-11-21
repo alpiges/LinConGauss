@@ -1,0 +1,10 @@
+.idea/*
+build/
+dist/
+*.egg-info
+.ipynb_checkpoints/
+*.pdf
+notebooks/.ipynb_checkpoints/*
+.pytest_cache
+__pycache__/
+*.pyc
