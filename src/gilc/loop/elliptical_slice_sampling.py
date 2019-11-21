@@ -1,13 +1,14 @@
 
 import numpy as np
 
-from .loop_state import LoopState
+from .loop import SamplingLoop
+from .loop_state import SamplerState
 from ..core.ellipse import Ellipse
-from ..core.elliptical_slice_sampling import EllipticalSliceSampler
+from ..core.angle_sampler import AngleSampler
 from ..core.active_intersections import ActiveIntersections
 
 
-class EllipticalSliceOuterLoop():
+class EllipticalSliceSampler(SamplingLoop):
     def __init__(self, n_iterations, linear_constraints, n_skip, x_init=None):
         """
         Loop for sampling from a linearly constrained Gaussian
@@ -29,7 +30,7 @@ class EllipticalSliceOuterLoop():
                 if self.lincon.integration_domain(x_init):
                     found_sample = True
 
-        self.loop_state = LoopState(x_init)
+        self.loop_state = SamplerState(x_init)
 
     def run_loop(self):
         """
@@ -55,7 +56,7 @@ class EllipticalSliceOuterLoop():
         x1 = np.random.randn(self.lincon.N_dim, 1)
         ellipse = Ellipse(x0, x1)
         active_intersections = ActiveIntersections(ellipse, self.lincon)
-        slice_sampler = EllipticalSliceSampler(active_intersections)
+        slice_sampler = AngleSampler(active_intersections)
 
         if not active_intersections.ellipse_in_domain:
             # ellipse is outside of integration domain, reconstruct a new ellipse (should not happen at all!)

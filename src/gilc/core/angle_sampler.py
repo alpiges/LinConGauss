@@ -1,10 +1,10 @@
 import numpy as np
 
 
-class EllipticalSliceSampler():
+class AngleSampler():
     def __init__(self, active_intersections):
         """
-        Samples from a slice on an ellipse
+        Samples from a slice on an ellipse given through active intersections.
         :param active_intersections: ActiveIntersections object
         """
         self.active_intersections = active_intersections
@@ -17,7 +17,7 @@ class EllipticalSliceSampler():
         :return: random angle from slice(s)
         """
         cum_len = self._get_slices_cumulative_length()
-        l = cum_len[-1] # TODO: Unit test: never larger than 2pi
+        l = cum_len[-1]
 
         sample = l*np.random.rand()   # random angle
 

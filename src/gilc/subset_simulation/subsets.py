@@ -1,7 +1,7 @@
 import numpy as np
 import time
 from ..core import LinearConstraints
-from ..loop import EllipticalSliceOuterLoop
+from ..loop import EllipticalSliceSampler
 from .nestings import SubsetSimRecords, NestedDomain
 
 class SubsetSimulation():
@@ -47,7 +47,7 @@ class SubsetSimulation():
 
             # sample from new domain using the elliptical slice sampler
             current_lincon = LinearConstraints(self.lincon.A, self.lincon.b + subdomain.shift)
-            sampler = EllipticalSliceOuterLoop(self.n_samples, current_lincon, self.n_skip, subdomain.x_in)
+            sampler = EllipticalSliceSampler(self.n_samples, current_lincon, self.n_skip, subdomain.x_in)
             sampler.run_loop()
 
             # create new nesting and add it to records

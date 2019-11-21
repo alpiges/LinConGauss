@@ -15,7 +15,7 @@ def test_ellipse_shape():
 
 def test_ellipse_samples_in_domain():
     """
-    Tests whether samples of the ellipse lie in integration domain
+    Tests whether samples of a fixed ellipse lie in integration domain
 
     Sets up a triangular domain (three constraints) around the center and an ellipse being a circle that intersects six
     times with the constraints.
@@ -41,7 +41,7 @@ def test_ellipse_samples_in_domain():
 
 def test_sampling():
     """
-    Tests if all samples lie within the integral domain
+    Tests if all samples lie within the integral domain when using elliptical slice sampling
     """
     n_lc = 5
     n_dim = 2

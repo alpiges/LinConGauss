@@ -1,6 +1,6 @@
 import numpy as np
 from ..core import LinearConstraints
-from ..loop import EllipticalSliceOuterLoop
+from ..loop import EllipticalSliceSampler
 
 class HDR():
     def __init__(self, linear_constraints, shift_sequence, n_samples, X_init, n_skip=0, timing=False):
@@ -143,7 +143,7 @@ class HDRNesting():
     def sample_from_nesting(self, n_samples, x_init, n_skip):
 
         # sample from new domain using the elliptical slice sampler
-        sampler = EllipticalSliceOuterLoop(n_samples, self.shifted_lincon, n_skip, x_init)
+        sampler = EllipticalSliceSampler(n_samples, self.shifted_lincon, n_skip, x_init)
         sampler.run_loop()
 
         # create new nesting
