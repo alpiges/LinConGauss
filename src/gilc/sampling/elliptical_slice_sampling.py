@@ -1,18 +1,17 @@
 
 import numpy as np
 
-from .loop import SamplingLoop
-from .loop_state import SamplerState
-from ..core.ellipse import Ellipse
-from ..core.angle_sampler import AngleSampler
-from ..core.active_intersections import ActiveIntersections
+from .sampling_loop import SamplingLoop, SamplerState
+from .ellipse import Ellipse
+from .angle_sampler import AngleSampler
+from .active_intersections import ActiveIntersections
 
 
 class EllipticalSliceSampler(SamplingLoop):
     def __init__(self, n_iterations, linear_constraints, n_skip, x_init=None):
         """
         Loop for sampling from a linearly constrained Gaussian
-        :param n_iterations: Number of desired loop iterations (integer)
+        :param n_iterations: Number of desired core iterations (integer)
         :param linear_constraints: an instance of LinearConstraints
         :param n_skip: number of samples to skip in order to get more independent samples
         :param x_init: Initial sample(s) from domain of interest, np.ndarray with shape (dimension, number of samples)
@@ -66,5 +65,5 @@ class EllipticalSliceSampler(SamplingLoop):
         return ellipse.x(t_new)
 
     def is_converged(self):
-        """ Stopping criterion for sampling loop """
+        """ Stopping criterion for sampling core """
         return self.loop_state.iteration >= self.n_iterations

@@ -1,4 +1,3 @@
 from .core import *
-from . import loop
-from . import subset_simulation
-from . import hdr
+from . import sampling
+from . import multilevel_splitting

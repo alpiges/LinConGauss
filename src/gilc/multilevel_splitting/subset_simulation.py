@@ -1,8 +1,8 @@
 import numpy as np
 import time
-from ..core import LinearConstraints
-from ..loop import EllipticalSliceSampler
-from .nestings import SubsetSimRecords, NestedDomain
+from gilc.core import LinearConstraints
+from gilc.core import EllipticalSliceSampler
+from .nestings import SubsetSimRecords, SubsetNesting
 
 class SubsetSimulation():
     def __init__(self, linear_constraints, n_samples, domain_fraction, n_skip=0, timing=False):
@@ -12,7 +12,7 @@ class SubsetSimulation():
         :param n_samples: number of samples per nesting (integer)
         :param domain_fraction: fraction of samples that should lie in the new domain (between 0 and 1)
         :param n_skip: number of samples to skip in ESS to get more independent samples
-        :param timing: whether to measure and record loop runtime
+        :param timing: whether to measure and record core runtime
         """
         self.lincon = linear_constraints
         self.n_samples = n_samples
@@ -23,20 +23,20 @@ class SubsetSimulation():
         # keep track of subset simulation
         self.tracker = SubsetSimRecords()
 
-        # timing of every iteration in the loop
+        # timing of every iteration in the core
         self.timing = timing
         if self.timing:
             self.times = []
 
     def run_loop(self, verbose=True):
         """
-        Run the subset sampling loop
+        Run the subset sampling core
         :param time: boolean whether to measure the time
         :param verbose: boolean whether to output current nesting number
         :return:
         """
         X = np.random.randn(self.dim, self.n_samples)
-        subdomain = NestedDomain(X, self.domain_fraction, self.lincon)
+        subdomain = SubsetNesting(X, self.domain_fraction, self.lincon)
         self.tracker.add_nesting(subdomain)
 
         count = 0
@@ -51,7 +51,7 @@ class SubsetSimulation():
             sampler.run_loop()
 
             # create new nesting and add it to records
-            subdomain = NestedDomain(sampler.loop_state.X[:,1:], self.domain_fraction, self.lincon)
+            subdomain = SubsetNesting(sampler.loop_state.X[:, 1:], self.domain_fraction, self.lincon)
             self.tracker.add_nesting(subdomain)
 
             if self.timing:

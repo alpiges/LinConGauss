@@ -1,6 +1,6 @@
 import numpy as np
 from ..core import LinearConstraints
-from ..loop import EllipticalSliceSampler
+from ..core import EllipticalSliceSampler
 
 class HDR():
     def __init__(self, linear_constraints, shift_sequence, n_samples, X_init, n_skip=0, timing=False):
@@ -23,7 +23,7 @@ class HDR():
         self.tracker = HDRRecords(self.shift_sequence)
         self.X_domain = None
 
-        # timing of every iteration in the loop
+        # timing of every iteration in the core
         self.timing = timing
         if self.timing:
             self.times = []
@@ -59,48 +59,7 @@ class HDR():
         return X
 
 
-class HDRRecords():
-    def __init__(self, shift_sequence):
-        """
-        Track record of HDR method given a sequence of shifts
-        :param shift_sequence: sequence of shifts for HDR method (as np.ndarray)
-        """
-        self.shift_sequence = shift_sequence
-        self.nestings = []
-        self.log_nesting_factors = self._get_log_nesting_factors()
 
-    def add_nesting(self, hdr_nesting):
-        """inte
-        Add a nesting to the track record
-        :param hdr_nesting: Instance of HDRNesting
-        :return: None
-        """
-        self.nestings.append(hdr_nesting)
-        self.log_nesting_factors = self._get_log_nesting_factors()
-        return
-
-    def is_complete(self):
-        return len(self.shift_sequence) == len(self.nestings)
-
-    def integral(self):
-        return self.nesting_factors.prod()
-
-    def log_integral(self):
-        return self.log_nesting_factors.sum()
-
-    def log2_integral(self):
-        return self.log2_nesting_factors.sum()
-
-    @property
-    def nesting_factors(self):
-        return np.exp(self.log_nesting_factors)
-
-    @property
-    def log2_nesting_factors(self):
-        return self.log_nesting_factors/np.log(2.)
-
-    def _get_log_nesting_factors(self):
-        return np.asarray([nest.log_nesting_factor for nest in self.nestings])
 
 
 

@@ -1,90 +1,59 @@
 import numpy as np
 
-
-class SubsetSimRecords():
-    def __init__(self):
-        self.sequence_of_nestings = []
-
-    def add_nesting(self, nested_domain):
-        """
-        Add one nesting to the sequence of nestings
-        :param nested_domain:
-        :return:
-        """
-        self.sequence_of_nestings.append(nested_domain)
-
-    def integral(self):
-        """
-        Compute the integral of the smallest nesting
-        :return: Integral value
-        """
-        integral = 1.
-        for nest in self.sequence_of_nestings:
-            integral *= nest.conditional_probability
-        return integral
-
-    def log_integral(self):
-        """
-        Compute the logarithm of the integral
-        :return: Log integral value
-        """
-        log_integral = 0.
-        for nest in self.sequence_of_nestings:
-            log_integral += np.log(nest.conditional_probability)
-        return log_integral
-
-    def log2_integral(self):
-        """
-        Compute the logarithm to base 2 of the integral
-        :return: Log2 integral value
-        """
-        log2_integral = 0.
-        for nest in self.sequence_of_nestings:
-            log2_integral += np.log2(nest.conditional_probability)
-        return log2_integral
-
-    def inner_domain_samples(self):
-        """
-        Returns samples from the smallest nesting
-        :return: Samples of what is currently the inner nesting
-        """
-        return self.sequence_of_nestings[-1].X_inside()
-
-    def is_complete(self):
-        """
-        Checks if the nesting sequence is complete and covers the failure domain
-        :return: Boolean
-        """
-        if len(self.sequence_of_nestings) == 0:
-            return False
-        return True if self.sequence_of_nestings[-1].shift == 0. else False
-
-    def n_nestings(self):
-        """
-        :return: Number of nestings
-        """
-        return len(self.sequence_of_nestings)
-
-    def shifts(self):
-        """
-        All shifts in the nesting sequence
-        :return: array of shifts
-        """
-        shifts = []
-        for nest in self.sequence_of_nestings:
-            shifts.append(nest.shift)
-        return np.asarray(shifts)
-
-    def x_inits(self):
-        """ Initial locations of all nestings """
-        x = []
-        for nest in self.sequence_of_nestings:
-            x.append(nest.x_in)
-        return np.hstack(x)
+from ..core import ShiftedLinearConstraints
 
 
 
-class NestedDomain():
+class HDRNesting(NestedDomain):
+    def __init__(self, linear_constraints, shift):
+        """
+        One nested domain for HDR
+        :param linear_constraints: instance of linear constraints
+        :param shift: shift defining the nesting
+        """
+        self.shifted_lincon = ShiftedLinearConstraints(linear_constraints.A, linear_constraints.b, shift)
+        self.shift = shift
+        self.dim = self.shifted_lincon.N_dim
+        self.log_nesting_factor = None
+
+    def samples_inside(self, X):
+        """
+        Boolean array whether samples X lie within the shifted domain
+        :param X: samples
+        :return: boolean array
+        """
+        return self.shifted_lincon.integration_domain(X)
+
+    def n_inside(self, X):
+        """
+        Number of samples X that lie within the domain
+        :param X: samples
+        :return: number of samples inside domain
+        """
+        return self.samples_inside(X).sum()
+
+    def sample_from_nesting(self, n_samples, x_init, n_skip):
+        """
+        Draw samples from the nesting using LIN-ESS
+        :param n_samples: number of samples to draw
+        :param x_init: Starting point in domain
+        :param n_skip: number of samples to skip in Markov chain
+        :return: samples
+        """
+
+        # sample from new domain using the elliptical slice sampler
+        sampler = EllipticalSliceSampler(n_samples, self.shifted_lincon, n_skip, x_init)
+        sampler.run()
+
+        # create new nesting
+        return sampler.loop_state.X
+
+    def compute_log_nesting_factor(self, X):
+        self.log_nesting_factor = np.log(self.n_inside(X)) - np.log(X.shape[1])
+
+
+
+class SubsetNesting():
     def __init__(self, X, fraction, linear_constraints, keep_samples=True):
         """
         Constructs a nesting given linear constraints and a fraction of samples that should lie inside the new nesting.
@@ -127,6 +96,13 @@ class NestedDomain():
         if self.keep_samples:
             return self.X[:, self.idx_inside]
         return False
+
+    def compute_shift(self, X):
+        """
+        Find the shift value for given samples X
+        :param X: Samples with shape (D, N)
+        :return: shift (float)
+        """
 
     def _update_find_shift(self, shiftvals):
         """

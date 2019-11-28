@@ -1,11 +1,18 @@
-import numpy as np
+from ..core.loop import Loop
+from ..core.loop_state import LoopState
 
-
-class LoopState():
+class SamplingLoop(Loop):
     def __init__(self):
-        """ Tracks important quantities during the loop """
+        """ Base class for a core used for drawing samples """
         pass
 
+    def compute_next_point(self, x0):
+        """
+        Computes the next sample from the linearly constrained unit Gaussian
+        :param x0: current state
+        :return: new state
+        """
+        return NotImplementedError
 
 class SamplerState(LoopState):
     """
@@ -22,10 +29,3 @@ class SamplerState(LoopState):
     @property
     def X(self):
         return np.hstack(self.samples)
-
-
-class IntegratorState(LoopState):
-
-class HDRTracker(IntegratorState):
-
-class SubsetSimulationTracker(IntegratorState):
