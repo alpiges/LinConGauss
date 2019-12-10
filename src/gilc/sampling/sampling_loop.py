@@ -7,7 +7,8 @@ class SamplingLoop(Loop):
         """
         Base class for a loop used for drawing samples
         """
-        super().__init__(n_iterations, linear_constraints, n_skip)
+        self.n_iterations = n_iterations
+        super().__init__(linear_constraints, n_skip)
 
     def compute_next_point(self, x0):
         """

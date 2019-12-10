@@ -1,7 +1,12 @@
 import numpy as np
-from .nestings import HDRNesting
+import time
 
-class HDR():
+from .nestings import HDRNesting
+from .integration_tracker import HDRTracker
+from .integration_loop import IntegrationLoop
+
+
+class HDR(IntegrationLoop):
     def __init__(self, linear_constraints, shift_sequence, n_samples, X_init, n_skip=0, timing=False):
         """
         Holmes-Diaconis-Ross algorithm for estimating integrals of linearly constrained Gaussians
@@ -12,47 +17,45 @@ class HDR():
         :param n_skip: number of samples to skip in ESS
         :param timing: whether to measure the runtime
         """
+        super().__init__(linear_constraints, n_samples, n_skip)
 
-        self.lincon = linear_constraints
         self.shift_sequence = shift_sequence
-        self.n_samples = n_samples
-        self.dim = self.lincon.N_dim
         self.X_init = X_init
-        self.n_skip = n_skip
-        self.tracker = HDRRecords(self.shift_sequence)
-        self.X_domain = None
+        self.tracker = HDRTracker(self.shift_sequence)
 
         # timing of every iteration in the core
         self.timing = timing
         if self.timing:
             self.times = []
 
-    def run(self, save_samples=False, verbose=False):
+    def run(self, verbose=False):
         """
         Run the HDR method
         :return:
         """
-        X = np.random.randn(self.dim, self.n_samples)
-
         for i, shift in enumerate(self.shift_sequence):
             if self.timing:
                 t = time.process_time()
 
+            if i == 0:
+                X = np.random.randn(self.dim, self.n_samples)
+            else:
+                X = current_nesting.sample_from_nesting(self.n_samples, self.X_init[:, i, None], self.n_skip)
+
             current_nesting = HDRNesting(self.lincon, shift)
             current_nesting.compute_log_nesting_factor(X)
-            if save_samples:
-                current_nesting.save_X(X)
-
             self.tracker.add_nesting(current_nesting)
-
-            X = current_nesting.sample_from_nesting(self.n_samples, self.X_init[:, i, None], self.n_skip)
 
             if self.timing:
                 self.times.append(time.process_time() - t)
             if verbose:
                 print('finished nesting #{}'.format(i))
 
-        # save the samples that lie in the domain of interest
-        # TODO: This is a bit hacky, one shouldn't need to draw these last samples...
-        self.X_domain = X
-        return X
+    def draw_from_domain(self, n):
+        """
+        Sample from the domain of interest.
+        :param n: number of samples to draw
+        :return: samples (D, n)
+        """
+        domain = HDRNesting(self.lincon, 0.)
+        return domain.sample_from_nesting(n, self.X_init[:, -1, None], self.n_skip)

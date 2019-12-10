@@ -1,6 +1,7 @@
 import numpy as np
 import time
 from .nestings import SubsetNesting
+from .integration_tracker import SubsetSimulationTracker
 
 class SubsetSimulation():
     def __init__(self, linear_constraints, n_samples, domain_fraction, n_skip=0, timing=False):
@@ -12,21 +13,19 @@ class SubsetSimulation():
         :param n_skip: number of samples to skip in ESS to get more independent samples
         :param timing: whether to measure and record core runtime
         """
-        self.lincon = linear_constraints
-        self.n_samples = n_samples
+        super().__init__(linear_constraints, n_samples, n_skip)
+
         self.domain_fraction = domain_fraction
-        self.dim = self.lincon.N_dim
-        self.n_skip = n_skip
 
         # keep track of subset simulation
-        self.tracker = SubsetSimRecords()
+        self.tracker = SubsetSimulationTracker()
 
         # timing of every iteration in the core
         self.timing = timing
         if self.timing:
             self.times = []
 
-    def run_loop(self, verbose=True):
+    def run(self, verbose=True):
         """
         Run the subset sampling core
         :param time: boolean whether to measure the time
