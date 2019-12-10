@@ -75,7 +75,7 @@ class HDRTracker(IntegratorState):
         return self.log_nesting_factors / np.log(2.)
 
     def _get_log_nesting_factors(self):
-        return np.asarray([nest.log_nesting_factor for nest in self.nestings])
+        return np.asarray([nest.log_conditional_probability for nest in self.nestings])
 
 
 

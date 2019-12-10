@@ -16,10 +16,8 @@ class EllipticalSliceSampler(SamplingLoop):
         :param n_skip: number of samples to skip in order to get more independent samples
         :param x_init: Initial sample(s) from domain of interest, np.ndarray with shape (dimension, number of samples)
         """
-        self.n_iterations = n_iterations
-        self.lincon = linear_constraints
+        super().__init__(n_iterations, linear_constraints, n_skip)
         self.dim = self.lincon.N_dim
-        self.n_skip = n_skip
 
         if x_init is None:
             # need to find a sample that lies in the domain :(
@@ -31,7 +29,7 @@ class EllipticalSliceSampler(SamplingLoop):
 
         self.loop_state = SamplerState(x_init)
 
-    def run_loop(self):
+    def run(self):
         """
         Sample from a linearly constrained unit Gaussian until stopping criterion is reached.
         :return: None

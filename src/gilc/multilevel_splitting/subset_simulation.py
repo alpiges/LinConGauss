@@ -1,8 +1,6 @@
 import numpy as np
 import time
-from gilc.core import LinearConstraints
-from gilc.core import EllipticalSliceSampler
-from .nestings import SubsetSimRecords, SubsetNesting
+from .nestings import SubsetNesting
 
 class SubsetSimulation():
     def __init__(self, linear_constraints, n_samples, domain_fraction, n_skip=0, timing=False):
@@ -36,7 +34,8 @@ class SubsetSimulation():
         :return:
         """
         X = np.random.randn(self.dim, self.n_samples)
-        subdomain = SubsetNesting(X, self.domain_fraction, self.lincon)
+        subdomain = SubsetNesting(self.lincon, self.domain_fraction)
+        subdomain.update_properties_from_samples(X)
         self.tracker.add_nesting(subdomain)
 
         count = 0
@@ -46,12 +45,11 @@ class SubsetSimulation():
                 t = time.process_time()
 
             # sample from new domain using the elliptical slice sampler
-            current_lincon = LinearConstraints(self.lincon.A, self.lincon.b + subdomain.shift)
-            sampler = EllipticalSliceSampler(self.n_samples, current_lincon, self.n_skip, subdomain.x_in)
-            sampler.run_loop()
+            X = subdomain.sample_from_nesting(self.n_samples, subdomain.x_in, self.n_skip)
 
             # create new nesting and add it to records
-            subdomain = SubsetNesting(sampler.loop_state.X[:, 1:], self.domain_fraction, self.lincon)
+            subdomain = SubsetNesting(self.lincon, self.domain_fraction)
+            subdomain.update_properties_from_samples(X)
             self.tracker.add_nesting(subdomain)
 
             if self.timing:

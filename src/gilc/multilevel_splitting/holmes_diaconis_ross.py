@@ -1,6 +1,5 @@
 import numpy as np
-from ..core import LinearConstraints
-from ..core import EllipticalSliceSampler
+from .nestings import HDRNesting
 
 class HDR():
     def __init__(self, linear_constraints, shift_sequence, n_samples, X_init, n_skip=0, timing=False):
@@ -57,54 +56,3 @@ class HDR():
         # TODO: This is a bit hacky, one shouldn't need to draw these last samples...
         self.X_domain = X
         return X
-
-
-
-
-
-
-class HDRNesting():
-    def __init__(self, linear_constraints, shift):
-        self.shifted_lincon = LinearConstraints(linear_constraints.A, linear_constraints.b + shift)
-        self.shift = shift
-        self.dim = self.shifted_lincon.N_dim
-        self.X = None
-        self.log_nesting_factor = None
-
-    def compute_log_nesting_factor(self, X):
-        self.log_nesting_factor = np.log(self.n_inside(X)) - np.log(X.shape[1])
-
-    def idx_inside(self, X):
-        """
-        Indices of samples X that lie within the domain
-        :param X: samples
-        :return: index array
-        """
-        return self.shifted_lincon.integration_domain(X)
-
-    def n_inside(self, X):
-        """
-        Number of samples X that lie within the domain
-        :param X: samples
-        :return: index array
-        """
-        return self.idx_inside(X).sum()
-
-    def save_X(self, X):
-        '''
-        Keep the samples from the previous nesting (a fraction of which is in the current nesting)
-        :param X: samples
-        :return: None
-        '''
-        self.X = X
-        return
-
-    def sample_from_nesting(self, n_samples, x_init, n_skip):
-
-        # sample from new domain using the elliptical slice sampler
-        sampler = EllipticalSliceSampler(n_samples, self.shifted_lincon, n_skip, x_init)
-        sampler.run_loop()
-
-        # create new nesting
-        return sampler.loop_state.X
-
