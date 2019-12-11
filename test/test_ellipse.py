@@ -1,7 +1,7 @@
 import numpy as np
 
 from gilc import LinearConstraints
-from gilc.sampling import Ellipse, ActiveIntersections, EllipticalSliceSampler
+from gilc.sampling import Ellipse, ActiveIntersections, AngleSampler, EllipticalSliceSampler
 
 
 def test_ellipse_shape():
@@ -13,7 +13,7 @@ def test_ellipse_shape():
     assert e.x(theta).shape == (D, 1)
 
 
-def test_ellipse_samples_in_domain():
+def test_samples_from_ellipse_in_domain():
     """
     Tests whether samples of a fixed ellipse lie in integration domain
 
@@ -28,7 +28,7 @@ def test_ellipse_samples_in_domain():
     lincon = LinearConstraints(A, b, mode='Intersection')
     ellipse = Ellipse(np.asarray([[1 / 3.], [0]]), np.asarray([[0], [1 / 3.]]))
     intersect = ActiveIntersections(ellipse, lincon)
-    ess = EllipticalSliceSampler(intersect)
+    ess = AngleSampler(intersect)
 
     N = 100
     samples = np.zeros((N,))
@@ -39,15 +39,15 @@ def test_ellipse_samples_in_domain():
     assert lincon.integration_domain(x).prod() == 1.
 
 
-def test_sampling():
+def test_ess_samples_in_domain():
     """
     Tests if all samples lie within the integral domain when using elliptical slice sampling
     """
     n_lc = 5
-    n_dim = 2
+    n_dim = 3
+    np.random.seed(0) # because sometimes it is hard to find an initial point in the randomly drawn domain.
     lincon = LinearConstraints(2 * np.random.randn(n_lc, n_dim), np.random.randn(n_lc, 1))
-    sampler = EllipticalSliceOuterLoop(1000, lincon, n_skip=0)
+    sampler = EllipticalSliceSampler(1000, lincon, n_skip=0)
 
-    sampler.run_loop()
+    sampler.run()
     assert np.all(lincon.integration_domain(sampler.loop_state.X)) == 1.
-

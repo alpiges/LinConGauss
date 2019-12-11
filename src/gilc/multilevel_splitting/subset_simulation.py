@@ -2,8 +2,9 @@ import numpy as np
 import time
 from .nestings import SubsetNesting
 from .integration_tracker import SubsetSimulationTracker
+from .integration_loop import IntegrationLoop
 
-class SubsetSimulation():
+class SubsetSimulation(IntegrationLoop):
     def __init__(self, linear_constraints, n_samples, domain_fraction, n_skip=0, timing=False):
         """
         Subset simulation to find a linearly constrained probability of failure in a Gaussian space

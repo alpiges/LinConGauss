@@ -71,6 +71,7 @@ class SubsetNesting(Nesting):
         self.n_save = n_save
 
         # Compute subset properties from samples
+        self.n_inside = None
         self.log_conditional_probability = None
         self.shift = None
         self.x_in = None
@@ -84,7 +85,7 @@ class SubsetNesting(Nesting):
         :param X: Samples with shape (D, N)
         :return: None
         """
-        n_inside = np.int(X.shape[-1] * self.fraction)
+        self.n_inside = np.int(X.shape[-1] * self.fraction)
 
         # Update log conditional probability
         self.compute_log_nesting_factor(X)
@@ -92,7 +93,7 @@ class SubsetNesting(Nesting):
         shiftvals = -np.amin(self.lincon.evaluate(X), axis=0)
 
         # pre-compute shift and index set
-        if (shiftvals < 0).sum() > n_inside:
+        if (shiftvals < 0).sum() > self.n_inside:
             # consider failure domain directly,
             self.shift = 0.
             idx_inside = self._update_fix_shift(self.shift, shiftvals)
@@ -122,7 +123,7 @@ class SubsetNesting(Nesting):
 
     def _update_find_shift(self, shiftvals):
         """
-        Find the shift s.t. self.n_inside of the samples lie inside the new domain
+        Find the shift s.t. fraction of the samples lie inside the new domain
         :param shiftvals: minimum of linear constraints evaluated at X
         :return: shift
         """

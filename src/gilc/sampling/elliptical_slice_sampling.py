@@ -22,10 +22,12 @@ class EllipticalSliceSampler(SamplingLoop):
         if x_init is None:
             # need to find a sample that lies in the domain :(
             found_sample = False
+            print('[EllipticalSliceSampler] searching x_init')
             while not found_sample:
                 x_init = np.random.randn(self.dim, 1)
                 if self.lincon.integration_domain(x_init):
                     found_sample = True
+                    print('[EllipticalSliceSampler] found x_init')
 
         self.loop_state = SamplerState(x_init)
 

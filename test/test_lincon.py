@@ -2,6 +2,7 @@ import numpy as np
 
 from constrained_gaussian_integrals import LinearConstraints
 
+
 def test_union_intersection():
     """ Tests whether union and intersection just have the opposite value of 0 and 1 """
     d = 15
