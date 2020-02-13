@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='GILC',
+    name='LinConGauss',
     version='0.1.0dev',
     author='Alexandra Gessner',
-    author_email='agessner@tue.mpg.de',
+    author_email='alexandra.gessner@uni-tuebingen.de',
     packages=find_packages(where='src', exclude=('test',)),
     package_dir={'': 'src'},
     license='LICENSE.txt',
