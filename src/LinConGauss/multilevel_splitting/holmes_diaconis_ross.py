@@ -51,6 +51,9 @@ class HDR(IntegrationLoop):
             if verbose:
                 print('finished nesting #{}'.format(i))
 
+        # saving the samples from the domain of interest
+        self.tracker.add_samples(X[:, self.lincon.integration_domain(X)==1])
+
     def draw_from_domain(self, n):
         """
         Sample from the domain of interest.

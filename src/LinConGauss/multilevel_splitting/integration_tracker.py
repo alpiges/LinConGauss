@@ -53,9 +53,16 @@ class HDRTracker(IntegratorState):
         """
         super().__init__()
         self.shift_sequence = shift_sequence
+        # samples from domain of interest
+        self.X = None
 
     def is_complete(self):
         return len(self.shift_sequence) == len(self.nestings)
+
+    def add_samples(self, X):
+        """ Save the samples from the domain of interest """
+        self.X = X
+        return
 
 
 class SubsetSimulationTracker(IntegratorState):
