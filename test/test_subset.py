@@ -20,10 +20,4 @@ def subset_finds_domain():
 
 def shifts_larger_zero():
     """ Test that shifts found by subset simulation are greater/equal to 0 """
-    pass
-
-
-def sampling_from_subset():
-    """ Test that samples from subset lie in the current domain """
-    pass
-
+    assert np.all(subset_simulator.tracker.shift_sequence >= 0.)
