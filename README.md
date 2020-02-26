@@ -14,7 +14,7 @@ For usage, please refer to the tutorials in the `notebook` section.
 ## How to cite
 If you are using `LinConGauss` for your research, consider citing the [paper](https://arxiv.org/abs/1910.09328) 
 ```
-@inproceedings{Gessner2020,
+@inproceedings{GessnerKH2020,
     title     = {Integrals over Gaussians under Linear Domain Constraints},
     author    = {Alexandra Gessner and Oindrila Kanjilal and Philipp Hennig},
     booktitle = {Proceedings of Machine Learning Research},
