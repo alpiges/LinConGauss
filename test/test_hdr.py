@@ -1,7 +1,6 @@
 import numpy as np
 
 
-A = np.ndarray([1,2,3])
 
 def hdr_samples_from_domain():
     """ Test whether HDR can sample from the domain of interest """

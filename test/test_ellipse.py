@@ -1,7 +1,7 @@
 import numpy as np
 
-from gilc import LinearConstraints
-from gilc.sampling import Ellipse, ActiveIntersections, AngleSampler, EllipticalSliceSampler
+from LinConGauss import LinearConstraints
+from LinConGauss.sampling import Ellipse, ActiveIntersections, AngleSampler, EllipticalSliceSampler
 
 
 def test_ellipse_shape():

@@ -1,7 +1,7 @@
 import numpy as np
 
-from gilc import LinearConstraints
-from gilc.multilevel_splitting import SubsetSimulation
+from LinConGauss import LinearConstraints
+from LinConGauss.multilevel_splitting import SubsetSimulation
 
 # define some linear constraints
 n_lc = 5
