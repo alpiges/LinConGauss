@@ -51,3 +51,16 @@ class LinearConstraints():
         :return: 1 if any of the linear functions is >= 0, else 0.
         """
         return 1 - (np.where(self.evaluate(x) >= 0, 0, 1)).prod(axis=0)
+
+
+
+class ShiftedLinearConstraints(LinearConstraints):
+    def __init__(self, A, b, shift):
+        """
+        Class for shifted linear constraints that appear in multilevel splitting method
+        :param A: matrix A with shape (M, D) where M is the number of constraints and D the dimension
+        :param b: offset, shape (M, 1)
+        :param shift: (positive) scalar value denoting the shift
+        """
+        self.shift = shift
+        super(ShiftedLinearConstraints, self).__init__(A, b + shift)
