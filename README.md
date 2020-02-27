@@ -1,4 +1,8 @@
-# `LinConGauss`: Integrals and samples of Gaussians under linear domain constraints
+# `LinConGauss`
+### _Integrals and samples of Gaussians under linear domain constraints_
+
+![Multilevel Splitting](https://repository-images.githubusercontent.com/243241472/797da100-5891-11ea-857f-0cca52af9239 "Multilevel Splitting")
+
 
 ## Setup
 Clone the repository and run `setup.py`
